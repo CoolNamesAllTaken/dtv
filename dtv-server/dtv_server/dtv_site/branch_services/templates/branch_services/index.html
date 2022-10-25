@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "branch_services/internal_template.html" %}
 
-<body>
-    {% load static %}
+{% block content %}
+<div class="p-5">
+    <h1>DTV Branch Services Home Page</h1>
+    <p>Hello</p>
+</div>
 
-    <img src="{% static 'branch_services/dtv_composite_logo_medium.png' %}">
-    <h1>DTV Branch Services</h1>
-    <p>Welcome to my first Django project!</p>
-
-</body>
-
-</html>
+{% endblock %}

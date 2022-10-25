@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% block title %}<title>DTV Branch Services Internal Page</title>{% endblock %}
+    {% load static %}
+    <link rel='stylesheet' href="{% static 'css/bootstrap.min.css' %}">
+    <link rel='stylesheet' href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+    
+
+    {% block nav_bar %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+          <img src="{% static 'branch_services/dtv_composite_logo_medium.png' %}" height="60" alt="">
+        </a>
+
+        <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Pricing</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- <img src="{% static 'branch_services/dtv_composite_logo_medium.png' %}"> -->
+    {% endblock %}
+
+    
+
+    {% block content %}
+    
+    <h1>DTV Branch Services Internal Site</h1>
+
+    {% endblock %}
+
+</body>
+
+</html>

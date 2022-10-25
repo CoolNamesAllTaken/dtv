@@ -1,5 +1,14 @@
 # Department of Treat Vending Website
 
+## Create Database Tables
+```bash
+poetry shell
+python manage.py makemigrations branch_services # set up the migration that creates the database stuff
+python manage.py check # make sure we aren't going to screw this up
+python manage.py migrate # create the database
+python manage.py createsuperuser # get an admin panel
+```
+
 ## Quick Run
 ```bash
 poetry shell
