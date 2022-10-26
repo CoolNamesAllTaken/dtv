@@ -9,7 +9,7 @@ def get_treat_license_photo_path(instance, filename):
         date.today().year,
         date.today().month,
         date.today().day,
-        instance.id,
+        instance.license_number,
         instance.first_name,
         instance.costume_name,
         filename) # TODO: figure out if instance.id will work here
@@ -42,10 +42,10 @@ class TreatLicense(models.Model):
         (TREAT_CLASS_SOUR_PUNCH_STRAWS, 'Sour Punch Straws'),
         (TREAT_CLASS_TWIX, 'Twix')
     ]
-    license_number = models.CharField(default=get_new_license_number, max_length=8)
+    license_number = models.CharField(default=get_new_license_number, max_length=8, primary_key=True)
     first_name = models.CharField(max_length=32)
-    costume_name = models.CharField(max_length = 32)
-    photo = models.FileField(upload_to=get_treat_license_photo_path)
+    costume_name = models.CharField(max_length=32)
+    photo = models.FileField(upload_to=get_treat_license_photo_path, default='treat_license_photos/default/top_view.jpg')
     issued_date = models.DateField(default=date.today)
     expiration_date = models.DateField(default=get_new_license_expiration_date)
     treat_class = models.CharField(

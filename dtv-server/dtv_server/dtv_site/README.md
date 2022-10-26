@@ -9,6 +9,8 @@ python manage.py migrate # create the database
 python manage.py createsuperuser # get an admin panel
 ```
 
+Go to [localhost:8000/admin](http://localhost:8000/admin/) to access the database.
+
 ## Quick Run
 ```bash
 poetry shell
