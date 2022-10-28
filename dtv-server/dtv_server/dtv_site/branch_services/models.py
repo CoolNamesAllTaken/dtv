@@ -56,8 +56,7 @@ class TreatLicense(models.Model):
     )
     treat_weight_oz = models.DecimalField(max_digits=5, decimal_places=1, default=0)
     treat_length_in = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    # favorite_color = models.CharField(max_length=4)
-    # favorite_animal = models.CharField(max_length=32)
+    # TODO: add favorite number
 
     def get_wrapper_color(treat_class):
         """
