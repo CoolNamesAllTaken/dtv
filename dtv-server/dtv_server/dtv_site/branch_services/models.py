@@ -45,6 +45,7 @@ class TreatLicense(models.Model):
     license_number = models.CharField(default=get_new_license_number, max_length=8, primary_key=True)
     first_name = models.CharField(max_length=32)
     costume_name = models.CharField(max_length=32)
+    favorite_number = models.IntegerField()
     photo = models.FileField(upload_to=get_treat_license_photo_path, default='treat_license_photos/default/top_view.jpg')
     issued_date = models.DateField(default=date.today)
     expiration_date = models.DateField(default=get_new_license_expiration_date)
@@ -56,7 +57,7 @@ class TreatLicense(models.Model):
     )
     treat_weight_oz = models.DecimalField(max_digits=5, decimal_places=1, default=0)
     treat_length_in = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    # TODO: add favorite number
+    issuer_code = models.CharField(max_length=5)
 
     def get_wrapper_color(treat_class):
         """
