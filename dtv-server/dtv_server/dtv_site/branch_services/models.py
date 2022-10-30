@@ -1,8 +1,6 @@
 from django.db import models
 from datetime import date
 
-
-
 def get_treat_license_photo_path(instance, filename):
     # image will be uploaded to MEDIA_ROOT/treat_license_photos/{id}/John_M_2022101902.jpg
     return 'treat_license_photos/{}_{}_{}/{}-{}_{}-{}'.format(
@@ -118,4 +116,12 @@ class TreatLicense(models.Model):
             return 'NOUG'
         return 'PLAS' # default and TREAT_CLASS_ID_ONLY
     
+# TODO add nicer IDs for these two
+class Ticket(models.Model):
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    datetime_modified = models.DateTimeField(auto_now=True)
+    completed = models.BooleanField(default=False)
 
+class DtvWindow(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, blank=True, null=True)
+    available = models.BooleanField(default=True)

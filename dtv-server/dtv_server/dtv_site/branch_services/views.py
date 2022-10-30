@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template import loader
 from django.urls import reverse
 
-from .models import TreatLicense, get_new_license_number
+from .models import TreatLicense, get_new_license_number, DtvWindow
 from branch_services.forms import TreatLicenseForm
 def index(request):
     num_treat_licenses = TreatLicense.objects.all().count()
@@ -77,3 +77,22 @@ def edit_id(request, license_number, slug=None):
     }
 
     return render(request, "branch_services/id_editor.html", context)
+
+
+def status(request):
+    windows = DtvWindow.objects.all()
+    context = {
+        'windows': windows
+    }
+    return render(request, "branch_services/status.html", context)
+
+
+def get_window_status(request):
+    windows = DtvWindow.objects.all()
+    context = {
+        'windows': [window.id for window in windows],
+        'tickets': [window.ticket.id if window.ticket is not None else '-' for window in windows],
+    }
+    return JsonResponse(context)
+
+    
