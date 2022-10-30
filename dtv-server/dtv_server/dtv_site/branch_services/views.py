@@ -4,7 +4,7 @@ from django.template import loader
 from django.urls import reverse
 from django.conf import settings # for MEDIA_ROOT etc
 
-from .models import TreatLicense, get_new_license_number, create_id_card
+from .models import TreatLicense, get_new_license_number, create_id_card, DtvWindow
 from branch_services.forms import TreatLicenseForm
 
 from scripts import id_card_utils
@@ -123,6 +123,22 @@ def edit_id(request, license_number=None, slug=None):
 
     return render(request, "branch_services/id_editor.html", context)
 
+def status(request):
+    windows = DtvWindow.objects.all()
+    context = {
+        'windows': windows
+    }
+    return render(request, "branch_services/status.html", context)
+
+
+def get_window_status(request):
+    windows = DtvWindow.objects.all()
+    context = {
+        'windows': [window.id for window in windows],
+        'tickets': [window.ticket.id if window.ticket is not None else '-' for window in windows],
+    }
+    return JsonResponse(context)
+    
 def print_id(request, license_number):
     """
     @brief Endpoint used for triggering print jobs of TreatLicense ID cards.
