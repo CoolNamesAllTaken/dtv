@@ -1,0 +1,2 @@
+* # ignore everything
+!defaults/* # don't ignore defaults

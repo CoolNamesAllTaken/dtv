@@ -1,19 +1,54 @@
 {% extends "branch_services/internal_template.html" %}
 
 {% block content %}
-<div class="p-5">
-    <h1>{{form_title}}</h1>
-    <div class="p-4 mb-2 bg-success text-white {{form_success_banner_display}}">
-        Treat License created successfully!
+<div class="container p-5">
+    <div class="row">
+        <div class="col-sm">
+            <h1>{{form_title}}</h1>
+            <!-- <div class="p-4 mb-2 bg-success text-white {{form_success_banner_display}}">
+                Treat License created successfully!
+            </div> -->
+            <div class="mt-2 mb-2 {{existing_id_banner_display}}">
+                <button class="btn btn-primary mt-3 mb-3" id="print-button">Print ID</button>
+                <a href="/branch_services/create_id" class="btn btn-secondary m-3"> Create New ID </a>
+            </div>
+            
+
+            <form enctype="multipart/form-data" action="" method="post">
+                {% csrf_token %}
+                <table>
+                    {{ form.as_table }}
+                </table>
+                <input class="btn btn-success mt-2" type="submit" value="Submit" />
+            </form>
+        </div>
+        <div class="col-sm">
+            <img src="data:image/png;base64,{{id_card_image_data}}" class="img-fluid">
+        </div>
     </div>
-    <a href="/branch_services/create_id" class="btn btn-primary mb-2 {{form_success_banner_display}}"> Create New ID </a>
-    <form enctype="multipart/form-data" action="" method="post">
-        {% csrf_token %}
-        <table>
-        {{ form.as_table }}
-        </table>
-        <input type="submit" value="Submit" />
-    </form>
+
+
 </div>
+
+<script>
+    function printFormStuff() {
+        const idUrl = '/branch_services/print_id/{{license_number}}';
+        const data = {};
+        fetch(idUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{ csrf_token }}', 
+            },
+            body: JSON.stringify(data),
+            credentials: "same-origin"
+
+        })
+            .then((response) => response.json())
+            .then((data) => console.log(data));
+    }
+
+    document.getElementById('print-button').addEventListener('click', printFormStuff)
+</script>
 
 {% endblock %}
