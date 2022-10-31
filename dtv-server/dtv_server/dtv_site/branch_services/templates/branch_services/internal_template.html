@@ -6,6 +6,9 @@
     {% load static %}
     <link rel='stylesheet' href="{% static 'css/bootstrap.min.css' %}">
     <link rel='stylesheet' href="{% static 'css/styles.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -27,8 +30,17 @@
             <li class="nav-item">
               <a class="nav-link" href="/branch_services/create_ticket">Create Ticket</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/branch_services/consume_ticket">Consume Ticket</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Window
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/branch_services/window/1">Window 1</a>
+                <a class="dropdown-item" href="/branch_services/window/2">Window 2</a>
+                <a class="dropdown-item" href="/branch_services/window/3">Window 3</a>
+                <a class="dropdown-item" href="/branch_services/window/4">Window 4</a>
+                <a class="dropdown-item" href="/branch_services/window/5">Window 5</a>
+              </div>
             </li>
         </ul>
     </nav>

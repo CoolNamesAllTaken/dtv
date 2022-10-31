@@ -162,13 +162,16 @@ def get_new_ticket(request):
 
 def get_next_ticket(request):
     print(request.body)
-    tickets = Ticket.objects.filter(completed=False).filter(dtvwindow__isnull=True).order_by('-datetime_created')
-    next_ticket = tickets[0]
     window = DtvWindow.objects.get(id=json.loads(request.body)['window_number'])
-    if window.ticket.completed:
-        window.ticket = next_ticket
-        window.save()
-        ticket_info = {'ticketNumber': next_ticket.id}
+    if window.ticket is None or window.ticket.completed:
+        tickets = Ticket.objects.filter(completed=False).filter(dtvwindow__isnull=True).order_by('-datetime_created')
+        if len(tickets):
+            next_ticket = tickets[0]
+            window.ticket = next_ticket
+            window.save()
+            ticket_info = {'ticketNumber': next_ticket.id}
+        else:
+            ticket_info = {'ticketNumber': '-'}
     else:
         ticket_info = {'ticketNumber': window.ticket.id}
     return JsonResponse(ticket_info)
