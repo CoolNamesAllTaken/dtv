@@ -3,7 +3,35 @@
 {% block content %}
 <div class="p-5">
     <h1>DTV Branch Services Home Page</h1>
-    <p>Hello</p>
+    <div class="row mt-2">
+        <div class="col-sm p-0 m-4 bg-light">
+            <h2 class="p-2 bg-dark text-white text-center">Stats</h2>
+            <div class="p-2 m-4 bg-info text-white text-center">
+                <h3>Number of IDs Created</h2>
+                <h3>{{ num_ids_created }}</h3>
+            </div>
+            <div class="p-2 m-4 bg-info text-white text-center">
+                <h3>Open Windows</h2>
+                <h3>??</h3>
+            </div>
+            <div class="p-2 m-4 bg-info text-white text-center">
+                <h3>Current Wait Time</h2>
+                <h3>??</h3>
+            </div>
+        </div>
+        <div class="col-sm p-0 m-4 bg-light">
+            <h2 class="p-2 bg-dark text-white text-center">Last Treat License Created</h2>
+            <img src="data:image/png;base64,{{id_card_image_data}}" class="img-fluid p-2">
+        </div>
+    </div>
+    
 </div>
+
+<script>
+    function autoRefresh() {
+        window.location = window.location.href;
+    }
+    setInterval('autoRefresh()', 5000);
+</script>
 
 {% endblock %}
