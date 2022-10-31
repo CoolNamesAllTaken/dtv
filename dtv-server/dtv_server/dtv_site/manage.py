@@ -3,8 +3,11 @@
 import os
 import sys
 
+from scripts.id_card_utils import initialize_id_printer
 
 def main():
+    initialize_id_printer() # note: this will run twice, since the auto-reloader runs as a separate process
+
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dtv_site.settings')
     try:
