@@ -47,6 +47,7 @@
         {% endfor %}
       </tbody>
     </table>
+    <h3 id="wait-time">Current wait time: </h3>
   </div>
 </body>
 
@@ -68,7 +69,7 @@
   }
 
   function updateWindowsTickets(data) {
-    console.log(data)
+    document.getElementById('wait-time').innerText = "Current wait time: " + data.wait_time + " minutes";
     const tableBody = document.getElementById("wt-table");
     const rows = tableBody.getElementsByTagName('tr');
     for (let i = 0; i < data.windows.length; i++) {
@@ -87,6 +88,21 @@
           cells[0].innerText = data.tickets[i];
           cells[1].innerText = data.windows[i];
         }
+        else {
+          const cell0 = document.createElement('td');
+          cell0.innerText = data.tickets[i];
+          const cell1 = document.createElement('td');
+          cell1.innerText = data.windows[i];
+          const newRow = document.createElement('tr');
+          newRow.appendChild(cell0)
+          newRow.appendChild(cell1)
+          tableBody.appendChild(newRow)
+        }
+      }
+    }
+    if (rows.length > data.windows.length - 1) {
+      for (let j = data.windows.length - 1; j < rows.length; j++) {
+        rows[j].remove();
       }
     }
   }

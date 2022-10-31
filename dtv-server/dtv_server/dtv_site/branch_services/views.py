@@ -98,12 +98,17 @@ def edit_id(request, license_number=None):
 def status(request):
     windows = DtvWindow.objects.all()
     slidenames = os.listdir("branch_services/static/branch_services/psa_slides")
-    print(slidenames)
     context = {
         'windows': windows,
         'slidenames': slidenames
     }
     return render(request, "branch_services/status.html", context)
+
+def get_current_wait_time():
+    completed_tickets = Ticket.objects.filter(completed=True).order_by('-datetime_created')
+    wait_times_minutes = [((ticket.datetime_modified - ticket.datetime_created).total_seconds() / 60) 
+                    for ticket in completed_tickets[:3]]
+    return round(sum(wait_times_minutes) / 3)
 
 
 def get_window_status(request):
@@ -111,6 +116,7 @@ def get_window_status(request):
     context = {
         'windows': [window.id for window in windows],
         'tickets': [window.ticket.id if window.ticket is not None else '-' for window in windows],
+        'wait_time': get_current_wait_time(),
     }
     return JsonResponse(context)
     
@@ -164,10 +170,9 @@ def get_new_ticket(request):
     return JsonResponse(ticket_info)
 
 def get_next_ticket(request):
-    print(request.body)
     window = DtvWindow.objects.get(id=json.loads(request.body)['window_number'])
     if window.ticket is None or window.ticket.completed:
-        tickets = Ticket.objects.filter(completed=False).filter(dtvwindow__isnull=True).order_by('-datetime_created')
+        tickets = Ticket.objects.filter(completed=False).filter(dtvwindow__isnull=True).order_by('datetime_created')
         if len(tickets):
             next_ticket = tickets[0]
             window.ticket = next_ticket
@@ -180,7 +185,6 @@ def get_next_ticket(request):
     return JsonResponse(ticket_info)
 
 def complete_ticket(request):
-    print(request.body)
     window = DtvWindow.objects.get(id=json.loads(request.body)['window_number'])
     window.ticket.completed = True
     window.ticket.save()
