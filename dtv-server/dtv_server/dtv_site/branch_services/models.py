@@ -184,12 +184,12 @@ class TreatLicense(models.Model):
             ext
         )
     
-# TODO add nicer IDs for these two
 class Ticket(models.Model):
+    id = models.CharField(primary_key=True, max_length=5)
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_modified = models.DateTimeField(auto_now=True)
     completed = models.BooleanField(default=False)
 
 class DtvWindow(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, blank=True, null=True)
+    ticket = models.ForeignKey(Ticket, on_delete=models.PROTECT, blank=True, null=True)
     available = models.BooleanField(default=True)
