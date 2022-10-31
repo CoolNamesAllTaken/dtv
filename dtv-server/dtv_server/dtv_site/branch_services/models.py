@@ -73,6 +73,7 @@ def get_random_default_photo_path():
 
 class TreatLicense(models.Model):
     TREAT_CLASS_ID_ONLY = 'ID'
+    TREAT_CLASS_KIT_KAT = 'KK'
     TREAT_CLASS_MMS = 'MM'
     TREAT_CLASS_REESES = 'RS'
     TREAT_CLASS_SKITTLES = 'SK'
@@ -82,6 +83,7 @@ class TreatLicense(models.Model):
     
     TREAT_CLASS_CHOICES = [
         (TREAT_CLASS_ID_ONLY, 'ID Card Only'),
+        (TREAT_CLASS_KIT_KAT, 'KitKat'),
         (TREAT_CLASS_MMS, 'M&Ms'),
         (TREAT_CLASS_REESES, 'Reeses'),
         (TREAT_CLASS_SKITTLES, 'Skittles'),
@@ -111,7 +113,9 @@ class TreatLicense(models.Model):
         @brief Returns the wrapper color of a given candy type.
         @retval Three-letter color identifier.
         """
-        if self.treat_class == self.TREAT_CLASS_MMS:
+        if self.treat_class == self.TREAT_CLASS_KIT_KAT:
+            return 'RED'
+        elif self.treat_class == self.TREAT_CLASS_MMS:
             return 'BRN'
         elif self.treat_class == self.TREAT_CLASS_REESES:
             return 'ORN'
@@ -130,7 +134,9 @@ class TreatLicense(models.Model):
         @brief Returns the exterior flavor of a given candy type.
         @retval Four-letter flavor identifier.
         """
-        if self.treat_class == self.TREAT_CLASS_MMS:
+        if self.treat_class == self.TREAT_CLASS_KIT_KAT:
+            return 'CHOC'
+        elif self.treat_class == self.TREAT_CLASS_MMS:
             return 'SUGR'
         elif self.treat_class == self.TREAT_CLASS_REESES:
             return 'CHOC'
@@ -149,7 +155,9 @@ class TreatLicense(models.Model):
         @brief Returns the interior flavor of a given candy type.
         @retval Four-letter flavor identifier.
         """
-        if self.treat_class == self.TREAT_CLASS_MMS:
+        if self.treat_class == self.TREAT_CLASS_KIT_KAT:
+            return 'WAFR'
+        elif self.treat_class == self.TREAT_CLASS_MMS:
             return 'CHOC' # various
         elif self.treat_class == self.TREAT_CLASS_REESES:
             return 'PNUT'
