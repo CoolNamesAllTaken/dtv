@@ -2,9 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template import loader
 from django.urls import reverse
-
-from .models import TreatLicense, get_new_license_number, DtvWindow
+import random
+import json
+from .models import TreatLicense, get_new_license_number, DtvWindow, Ticket
 from branch_services.forms import TreatLicenseForm
+
 def index(request):
     num_treat_licenses = TreatLicense.objects.all().count()
     context = {
@@ -88,7 +90,7 @@ def status(request):
 
 
 def get_window_status(request):
-    windows = DtvWindow.objects.all()
+    windows = DtvWindow.objects.all().order_by('-ticket__datetime_created')
     context = {
         'windows': [window.id for window in windows],
         'tickets': [window.ticket.id if window.ticket is not None else '-' for window in windows],
@@ -96,3 +98,43 @@ def get_window_status(request):
     return JsonResponse(context)
 
     
+def window(request, window_number):
+    current_window = get_object_or_404(DtvWindow, pk=window_number)
+    context = {
+        'window_number': window_number,
+        'current_ticket': current_window.ticket.id if current_window.ticket is not None else '-'
+    }
+    return render(request, "branch_services/window.html", context)
+
+def get_new_ticket(request):
+    ticket_letter = random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    ticket_count = Ticket.objects.count()
+    ticket_id = ticket_letter + str(ticket_count).zfill(3)
+    ticket = Ticket(id=ticket_id, completed=False)
+    ticket.save()
+    ticket_info = {'ticketNumber': ticket_id}
+    return JsonResponse(ticket_info)
+
+def get_next_ticket(request):
+    print(request.body)
+    tickets = Ticket.objects.filter(completed=False).filter(dtvwindow__isnull=True).order_by('-datetime_created')
+    next_ticket = tickets[0]
+    window = DtvWindow.objects.get(id=json.loads(request.body)['window_number'])
+    if window.ticket.completed:
+        window.ticket = next_ticket
+        window.save()
+        ticket_info = {'ticketNumber': next_ticket.id}
+    else:
+        ticket_info = {'ticketNumber': window.ticket.id}
+    return JsonResponse(ticket_info)
+
+def complete_ticket(request):
+    print(request.body)
+    window = DtvWindow.objects.get(id=json.loads(request.body)['window_number'])
+    window.ticket.completed = True
+    window.ticket.save()
+    ticket_info = {'ticketNumber': '-'}
+    return JsonResponse(ticket_info)
+
+def create_ticket(request):
+    return render(request, "branch_services/create_ticket.html")

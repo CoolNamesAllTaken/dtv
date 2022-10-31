@@ -12,34 +12,34 @@
 </head>
 
 <body style="display: flex; flex-direction: row">
-<div>
-  <div id="carouselExampleSlidesOnly" class="carousel slide carousel-fade" data-bs-ride="carousel"
-    data-bs-interval="1000" style="width: 70vw">
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="{% static 'branch_services/dtv_composite_logo_medium.png' %}" class="d-block w-100" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'branch_services/trickortreatlanterns.jpg' %}" class="d-block w-100" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'branch_services/trickortreatlanterns.jpg' %}" class="d-block w-100" alt="...">
+  <div>
+    <div id="carouselExampleSlidesOnly" class="carousel slide carousel-fade" data-bs-ride="carousel"
+      data-bs-interval="1000" style="width: 70vw">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="{% static 'branch_services/dtv_composite_logo_medium.png' %}" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="{% static 'branch_services/trickortreatlanterns.jpg' %}" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="{% static 'branch_services/trickortreatlanterns.jpg' %}" class="d-block w-100" alt="...">
+        </div>
       </div>
     </div>
   </div>
-</div>
   <div class="tickets-window" style="flex-grow: 1">
     <h1>Now Serving</h1>
-    <h1>G 048</h1>
-    <h2>Window 7</h2>
+    <h1 id="top-ticket">G 048</h1>
+    <h2 id="top-window">Window 7</h2>
     <table>
       <thead>
         <tr>
-          <th style="background-color: grey; color: white;">Customer</th>
-          <th style="background-color: grey; color: white;">Window</th>
+          <th>Customer</th>
+          <th>Window</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="wt-table">
         {% for window in windows %}
         <tr>
           <td>{{ window.ticket.id }}</td>
@@ -54,12 +54,33 @@
 </html>
 
 <script>
-function getDtvWindowUpdates() {
-  fetch('/branch_services/get_window_status/')
-  .then((response) => response.json())
-  .then((data) => console.log(data));
-  setTimeout(getDtvWindowUpdates, 5000);
-}
+  function updateWindowsTickets(data) {
+    console.log(data)
+    const tableBody = document.getElementById("wt-table");
+    const rows = tableBody.getElementsByTagName('tr');
+    for (let i=0; i < data.windows.length; i++){
+      if (i === 0) {
+        document.getElementById("top-ticket").innerText = data.tickets[i];
+        document.getElementById("top-window").innerText = "Window " + data.windows[i];
+        // TODO add announcement only if the ticket/window has changed
+      }
+      else {
+        if ((i - 1) < rows.length) {
+          const cells = rows[(i-1)].getElementsByTagName('td');
+          console.log(cells)
+          cells[0].innerText = data.tickets[i];
+          cells[1].innerText = data.windows[i];
+        }
+      }
+    }
+  }
 
-getDtvWindowUpdates();
+  function getDtvWindowUpdates() {
+    fetch('/branch_services/get_window_status/')
+      .then((response) => response.json())
+      .then((data) => updateWindowsTickets(data));
+    setTimeout(getDtvWindowUpdates, 5000);
+  }
+
+  getDtvWindowUpdates();
 </script>

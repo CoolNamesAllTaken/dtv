@@ -1,0 +1,56 @@
+{% extends "branch_services/internal_template.html" %}
+
+{% block content %}
+<div class="p-5">
+    <h1>DTV Window {{window_number}}</h1>
+    <h3>Now processing: Ticket <b id="ticket-number">{{ current_ticket }}</b></h3>
+    <button class="btn btn-primary mt-3 mb-3" id="ticket-complete-button">Mark ticket as complete</button>
+    <button class="btn btn-primary mt-3 mb-3" id="ticket-next-button">Get next ticket</button>
+</div>
+<script>
+    function nextTicket() {
+        const idUrl = '/branch_services/get_next_ticket';
+        const data = {window_number: '{{ window_number }}'};
+        fetch(idUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{ csrf_token }}', 
+            },
+            body: JSON.stringify(data),
+            credentials: "same-origin"
+
+        })
+            .then((response) => response.json())
+            .then((data) => 
+                document.getElementById('ticket-number').innerText = data.ticketNumber
+            );
+    }
+
+    document.getElementById('ticket-next-button').addEventListener('click', nextTicket)
+
+    function completeTicket() {
+        const idUrl = '/branch_services/complete_ticket';
+        const data = {window_number: '{{ window_number }}'};
+        fetch(idUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "X-CSRFToken": '{{ csrf_token }}', 
+            },
+            body: JSON.stringify(data),
+            credentials: "same-origin"
+
+        })
+            .then((response) => response.json())
+            .then((data) => 
+                document.getElementById('ticket-number').innerText = data.ticketNumber
+            );
+    }
+
+    document.getElementById('ticket-complete-button').addEventListener('click', completeTicket)
+</script>
+</script>
+{% endblock %}

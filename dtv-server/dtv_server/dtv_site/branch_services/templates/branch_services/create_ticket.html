@@ -1,0 +1,24 @@
+{% extends "branch_services/internal_template.html" %}
+
+{% block content %}
+<div class="p-5">
+    <h1>Ticket generator</h1>
+    <button class="btn btn-primary mt-3 mb-3" id="ticket-button">Create new ticket</button>
+    <br> <br> <br> <br>
+    <h3>Your ticket number:</h3>
+    <h1 id="ticket-number"></h1>
+</div>
+
+<script>
+    function getNewTicketNumber() {
+        const idUrl = '/branch_services/get_new_ticket';
+        fetch(idUrl)
+            .then((response) => response.json())
+            .then((data) => 
+                document.getElementById('ticket-number').innerText = data.ticketNumber
+            );
+    }
+
+    document.getElementById('ticket-button').addEventListener('click', getNewTicketNumber)
+</script>
+{% endblock %}
