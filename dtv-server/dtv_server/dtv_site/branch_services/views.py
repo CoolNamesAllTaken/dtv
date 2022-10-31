@@ -5,7 +5,7 @@ from django.urls import reverse
 import random
 import json
 from branch_services.forms import TreatLicenseForm
-
+import os
 from django.conf import settings # for MEDIA_ROOT etc
 
 from .models import TreatLicense, get_new_license_number, create_id_card, DtvWindow, Ticket
@@ -97,8 +97,11 @@ def edit_id(request, license_number=None):
 
 def status(request):
     windows = DtvWindow.objects.all()
+    slidenames = os.listdir("branch_services/static/branch_services/psa_slides")
+    print(slidenames)
     context = {
-        'windows': windows
+        'windows': windows,
+        'slidenames': slidenames
     }
     return render(request, "branch_services/status.html", context)
 

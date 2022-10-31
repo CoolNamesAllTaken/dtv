@@ -14,17 +14,16 @@
 <body style="display: flex; flex-direction: row">
   <div>
     <div id="carouselExampleSlidesOnly" class="carousel slide carousel-fade" data-bs-ride="carousel"
-      data-bs-interval="1000" style="width: 70vw">
+      data-bs-interval="30000" style="width: 70vw">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="{% static 'branch_services/dtv_composite_logo_medium.png' %}" class="d-block w-100" alt="...">
+          <img src="{% static 'branch_services/psa_slides/psa_cras.png' %}" class="d-block w-100" alt="...">
         </div>
+        {% for slide in slidenames %}
         <div class="carousel-item">
-          <img src="{% static 'branch_services/trickortreatlanterns.jpg' %}" class="d-block w-100" alt="...">
+          <img src="{% get_static_prefix %}branch_services/psa_slides/{{ slide }}" class="d-block w-100" alt="...">
         </div>
-        <div class="carousel-item">
-          <img src="{% static 'branch_services/trickortreatlanterns.jpg' %}" class="d-block w-100" alt="...">
-        </div>
+        {% endfor %}
       </div>
     </div>
   </div>
@@ -54,19 +53,36 @@
 </html>
 
 <script>
+  const synth = window.speechSynthesis;
+
+  function announceNewTicket(ticketNumber, windowNumber) {
+    console.log("announcing")
+    //"now serving: ... ticket number F, 0, 8, 4, at window 1,   5,   6"
+    const announceString = "Now serving: ... ticket number, " 
+      + [...ticketNumber].reduce((previousValue, currentValue) => previousValue + ', ' + currentValue,
+      '') + ", at window, " + windowNumber;
+    const utterThis = new SpeechSynthesisUtterance(announceString)
+    utterThis.pitch = 0.7;
+    utterThis.rate = 1.1;
+    synth.speak(utterThis)
+  }
+
   function updateWindowsTickets(data) {
     console.log(data)
     const tableBody = document.getElementById("wt-table");
     const rows = tableBody.getElementsByTagName('tr');
-    for (let i=0; i < data.windows.length; i++){
+    for (let i = 0; i < data.windows.length; i++) {
       if (i === 0) {
-        document.getElementById("top-ticket").innerText = data.tickets[i];
-        document.getElementById("top-window").innerText = "Window " + data.windows[i];
-        // TODO add announcement only if the ticket/window has changed
+        const currentTicket = document.getElementById("top-ticket").innerText;
+        if (currentTicket !== data.tickets[i]) {
+          document.getElementById("top-ticket").innerText = data.tickets[i];
+          document.getElementById("top-window").innerText = "Window " + data.windows[i];
+          announceNewTicket(data.tickets[i], data.windows[i]);
+        }
       }
       else {
         if ((i - 1) < rows.length) {
-          const cells = rows[(i-1)].getElementsByTagName('td');
+          const cells = rows[(i - 1)].getElementsByTagName('td');
           console.log(cells)
           cells[0].innerText = data.tickets[i];
           cells[1].innerText = data.windows[i];
