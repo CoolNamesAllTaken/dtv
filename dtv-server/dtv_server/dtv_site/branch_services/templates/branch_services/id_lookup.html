@@ -1,0 +1,26 @@
+{% extends "branch_services/internal_template.html" %}
+
+{% block content %}
+{% load static %}
+<div class="container p-5">
+    <div class="row">
+        <div class="col-sm">
+            <h1>Lookup ID</h1>
+            <p>{{ message }}</p>
+            <form enctype="multipart/form-data" action="" method="post">
+                {% csrf_token %}
+                <table>
+                    {{ form.as_table }}
+                </table>
+                <input class="btn btn-success mt-2" type="submit" value="Submit" />
+            </form>
+        </div>
+        <div class="col-sm">
+            <img src="{% static 'branch_services/license_number_example.png' %}" class="img-fluid">
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}
