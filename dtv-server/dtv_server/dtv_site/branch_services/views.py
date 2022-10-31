@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.conf import settings # for MEDIA_ROOT etc
 
 from .models import TreatLicense, get_new_license_number, create_id_card, DtvWindow
-from branch_services.forms import TreatLicenseForm
+from branch_services.forms import TreatLicenseForm, TreatLicenseLookupForm
 
 from scripts import id_card_utils
 
@@ -18,50 +18,18 @@ def create_id_card_from_form(form):
     create_id_card(treat_license)
 
 def index(request):
-    num_treat_licenses = TreatLicense.objects.all().count()
+    try:
+        latest_treat_license = TreatLicense.objects.latest('license_number')
+        id_card_image_data = id_card_utils.encode_id_card_image(latest_treat_license.get_id_card_path())
+    except:
+        id_card_image_data = ""
     context = {
-        'num_treat_licenses': num_treat_licenses
-    }
-    return render(request, "branch_services/index.html")
-
-def create_id(request):
-    """
-    @brief View used when creating a new TreatLicense ID card. Automatically fetches the next avaialble license number and populates
-    a form with default information.
-    @param[in] request HTTP request for the page (GET for accessing, POST when submitting the form).
-    @retval Rendered HTML.
-    """
-    # No ID card yet, show the blank template
-    id_card_image_data = id_card_utils.encode_id_card_image("scripts/assets/dtv_card_front_600dpi.png")
-
-    # If this is a POST request then process the Form data
-    if request.method == 'POST':
-
-        # Create a form instance and populate it with data from the request (binding):
-        form = TreatLicenseForm(request.POST, request.FILES)
-
-        # Check if the form is valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            create_id_card_from_form(form)
-
-            # redirect to a new URL:
-            return HttpResponseRedirect('edit_id/' + form.cleaned_data['license_number'] + '/success')
-
-    # If this is a GET (or any other method) create the default form.
-    else:
-        form = TreatLicenseForm()
-
-    context = {
-        'form': form,
-        'form_title': "DTV ID Creator",
-        'form_success_banner_display': "d-none",
+        'num_ids_created': TreatLicense.objects.all().count(),
         'id_card_image_data': id_card_image_data
     }
+    return render(request, "branch_services/index.html", context)
 
-    return render(request, "branch_services/id_editor.html", context)
-
-def edit_id(request, license_number=None, slug=None):
+def edit_id(request, license_number=None):
     """
     @brief View used for editing a TreatLicense ID card.
     @param[in] request HTTP request for the page (GET for accessing, POST when submitting the form).
@@ -80,23 +48,19 @@ def edit_id(request, license_number=None, slug=None):
         id_card_image_data = id_card_utils.encode_id_card_image("scripts/assets/dtv_card_front_600dpi.png")
         form_title = "Create New ID Card"
 
-    # if (slug == "success"):
-    #     display_form_success_banner = True # came here from a successful operation
-    # else:
-    #     display_form_success_banner = False
-
     # If this is a POST request then process the Form data
     if request.method == 'POST':
-
         # Create a form instance and populate it with data from the request (binding):
         form = TreatLicenseForm(request.POST, request.FILES, instance=treat_license)
+        # Not for human consumption, since the only way the user sees this form is if the form is not valid even though it was POSTed.
+        # Disable the sensitive fields anyways, just to be safe.
+        form.fields['license_number'].disabled = True
+        # form.fields['license_number'].required = False
 
         # Check if the form is valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
             create_id_card_from_form(form)
-            
-            display_form_success_banner = True
 
             # redirect to a new URL:
             return HttpResponseRedirect('/branch_services/edit_id/' + form.cleaned_data['license_number'])
@@ -104,6 +68,10 @@ def edit_id(request, license_number=None, slug=None):
     # If this is a GET (or any other method) create the default form.
     else:
         form = TreatLicenseForm(instance=treat_license)
+        # Don't allow the user to touch the license number field to avoid conflicts.
+        form.fields['license_number'].disabled = True
+        # Allow any random ass garbage to be submitted 
+        # form.fields['license_number'].required = False
 
     if treat_license:
         # Treat license exists, enable print function and "New ID" button.
@@ -171,3 +139,31 @@ def print_id(request, license_number):
         response_dict['error_msg'] = "Not a POST request."
 
     return JsonResponse(response_dict)
+
+def lookup_id(request):
+    message = "Lookup ID by license number."
+    if request.method == 'POST':
+        # Create a form instance and populate it with data from the request (binding):
+        form = TreatLicenseLookupForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            license_number = form.cleaned_data['license_number']
+            try:
+                treat_license = get_object_or_404(TreatLicense, pk=license_number)
+                # redirect to a new URL:
+                return HttpResponseRedirect('/branch_services/edit_id/' + license_number)
+            except:
+                message = "ID number {} not found!".format(license_number)
+        else:
+            message = "Form contents not valid. Try again!"
+    else:
+        form = TreatLicenseLookupForm()
+    
+    context = {
+        'form': form,
+        'message': message
+    }
+    
+    return render(request, "branch_services/id_lookup.html", context)

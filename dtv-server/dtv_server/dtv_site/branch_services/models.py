@@ -89,7 +89,7 @@ class TreatLicense(models.Model):
         (TREAT_CLASS_SOUR_PUNCH_STRAWS, 'Sour Punch Straws'),
         (TREAT_CLASS_TWIX, 'Twix')
     ]
-    license_number = models.CharField(default=get_new_license_number, max_length=8, primary_key=True)
+    license_number = models.CharField(default="TBA", max_length=8, primary_key=True)
     first_name = models.CharField(max_length=32)
     costume_name = models.CharField(max_length=32)
     favorite_number = models.IntegerField()
