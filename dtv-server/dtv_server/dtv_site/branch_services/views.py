@@ -29,7 +29,9 @@ def index(request):
         id_card_image_data = ""
     context = {
         'num_ids_created': TreatLicense.objects.all().count(),
-        'id_card_image_data': id_card_image_data
+        'id_card_image_data': id_card_image_data,
+        'wait_time': get_current_wait_time(),
+        'num_windows': DtvWindow.objects.all().count()
     }
     return render(request, "branch_services/index.html", context)
 

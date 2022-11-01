@@ -47,7 +47,8 @@
         {% endfor %}
       </tbody>
     </table>
-    <h3 id="wait-time">Current wait time: </h3>
+    <br><br>
+    <h2>Current wait time:</h2><h1 id="wait-time"> </h1>
   </div>
 </body>
 
@@ -69,7 +70,7 @@
   }
 
   function updateWindowsTickets(data) {
-    document.getElementById('wait-time').innerText = "Current wait time: " + data.wait_time + " minutes";
+    document.getElementById('wait-time').innerText = data.wait_time + " minutes";
     const tableBody = document.getElementById("wt-table");
     const rows = tableBody.getElementsByTagName('tr');
     for (let i = 0; i < data.windows.length; i++) {
